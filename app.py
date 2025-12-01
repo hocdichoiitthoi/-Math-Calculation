@@ -1,59 +1,89 @@
 import streamlit as st
 import math
 
-# Cấu hình tiêu đề trang web
-st.set_page_config(page_title="Máy tính Casio Online", page_icon="🧮")
+# Web app configuration
+st.set_page_config(page_title="Calculator Online", page_icon="🧮")
 
-st.title("🧮 Máy tính Khoa học bằng Python")
+st.title("🧮 Calculator Online")
 
-# Tạo 2 cột để giao diện đẹp hơn
+# Create 2 columns for better layout
 col1, col2 = st.columns(2)
 
 with col1:
-    num1 = st.number_input("Nhập số thứ nhất (a)", value=0.0)
+    num1 = st.number_input("Enter the first number (a)", value=0.0)
 with col2:
-    num2 = st.number_input("Nhập số thứ hai (b)", value=0.0)
+    num2 = st.number_input("Enter the second number (b)", value=0.0)
 
-# Chọn phép tính
+# Choose operation
 operation = st.selectbox(
-    "Chọn phép toán",
-    ("Cộng (+)", "Trừ (-)", "Nhân (*)", "Chia (/)", "Lũy thừa (a^b)", "Căn bậc 2 của a", "Sin(a)", "Cos(a)")
+    "Choose operation",
+    ("Add (+)", "Subtract (-)", "Multiply (*)", "Divide (/)",
+     "Power (a^2)", "Power (a^3)", "Power (a^b)", 
+     "Square root of a", "Cube root of a", "bth root of a",
+     "Sin(a)", "Cos(a)", "Tan(a)", "Cot(a)")
 )
 
 result = None
 
-# Xử lý tính toán khi bấm nút
-if st.button("Tính toán"):
+# Handle calculation when button is pressed
+if st.button("Calculate"):
     try:
-        if operation == "Cộng (+)":
+        if operation == "Add (+)":
             result = num1 + num2
-        elif operation == "Trừ (-)":
+        elif operation == "Subtract (-)":
             result = num1 - num2
-        elif operation == "Nhân (*)":
+        elif operation == "Multiply (*)":
             result = num1 * num2
-        elif operation == "Chia (/)":
+        elif operation == "Divide (/)":
             if num2 != 0:
                 result = num1 / num2
             else:
-                st.error("Lỗi: Không thể chia cho 0")
-        elif operation == "Lũy thừa (a^b)":
+                st.error("Error: Cannot divide by zero")
+        elif operation == "Power (a^2)":
+            result = math.pow(num1, 2)  
+        elif operation == "Power (a^3)":
+            result = math.pow(num1, 3)          
+        elif operation == "Power (a^b)":
             result = math.pow(num1, num2)
-        elif operation == "Căn bậc 2 của a":
+        elif operation == "Square root of a":
             if num1 >= 0:
                 result = math.sqrt(num1)
             else:
-                st.error("Lỗi: Không thể tính căn bậc 2 của số âm")
+                st.error("Error: Cannot calculate the square root of a negative number")
+        elif operation == "Cube root of a":
+            result = num1 ** (1/3)
+        elif operation == "bth root of a":
+            if num2 != 0 and (num2 % 2 != 0 or num1 >= 0):
+                result = num1 ** (1/num2)
+            elif num2!= 0 and num2 % 2 == 0 and num1 <0:
+                st.error("Error: Cannot calculate even root of a negative number")    
+            else:
+                st.error("Error: Cannot calculate the zeroth root")    
         elif operation == "Sin(a)":
-            # Chuyển đổi sang radian nếu cần, ở đây tính theo radian mặc định
-            result = math.sin(num1)
+            # Convert degrees to radians
+            radians = math.radians(num1)
+            result = math.sin(radians)
         elif operation == "Cos(a)":
-            result = math.cos(num1)
-            
-        # Hiển thị kết quả
+            # Convert degrees to radians
+            radians = math.radians(num1)
+            result = math.cos(radians)
+        elif operation == "Tan(a)":
+            # Convert degrees to radians
+            radians = math.radians(num1)
+            result = math.tan(radians)
+        elif operation == "Cot(a)":
+            # Convert degrees to radians
+            radians = math.radians(num1)
+            if math.tan(radians) != 0:
+                result = 1 / math.tan(radians)
+            else:
+                st.error("Error: Cotangent is undefined for this input")
+        # Show result
         if result is not None:
-            st.success(f"Kết quả: {result}")
+            # Round to 10 decimal places to avoid floating point precision issues
+            rounded_result = round(result, 10)
+            st.success(f"Result: {rounded_result}")
             
     except Exception as e:
-        st.error(f"Có lỗi xảy ra: {e}")
+        st.error(f"An error occurred: {e}")
 
-# Chạy thử dưới máy tính của bạn bằng lệnh: streamlit run app.py
