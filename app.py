@@ -6,6 +6,12 @@ st.set_page_config(page_title="Calculator Online", page_icon="🧮")
 
 st.title("🧮 Calculator Online")
 
+# Initialize session state for history
+if 'calculation_count' not in st.session_state:
+    st.session_state.calculation_count = 0
+if 'history' not in st.session_state:
+    st.session_state.history = []
+
 # Create 2 columns for better layout
 col1, col2 = st.columns(2)
 
@@ -83,7 +89,19 @@ if st.button("Calculate"):
             # Round to 10 decimal places to avoid floating point precision issues
             rounded_result = round(result, 10)
             st.success(f"Result: {rounded_result}")
-            
+            st.session_state.history.insert(0, expression := f"{operation.replace('(a)', f'({num1})').replace('(b)', f'({num2})')} = {rounded_result}")
+            st.session_state.calculation_count += 1
+
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
+st.divider() # Draw a horizontal line
+st.subheader("📜 History of recent calculations")
+
+if len(st.session_state.history) > 0:
+    for item in st.session_state.history:
+        st.text(item) # Print each history item
+else:
+    st.write("No calculations yet.")
+
+st.write(f"Total calculations performed: {st.session_state.calculation_count}")
